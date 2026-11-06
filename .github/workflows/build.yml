@@ -1,0 +1,25 @@
+name: Installateur Windows
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Installer Inno Setup
+        run: choco install innosetup -y --no-progress
+
+      - name: Compiler l'installateur
+        shell: pwsh
+        run: '& "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe" installer.iss'
+
+      - name: Publier le fichier
+        uses: actions/upload-artifact@v4
+        with:
+          name: MesComptes-Setup
+          path: output/MesComptes-Setup.exe
