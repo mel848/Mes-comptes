@@ -1,0 +1,22 @@
+MesComptes - installation sur le PC (Windows)
+
+1. Sur GitHub (compte mel848) : créer un dépôt public "mescomptes".
+2. "Add file" > "Upload files" : déposer index.html, manifest.json, sw.js, icon-192.png, icon-512.png. Valider.
+3. Settings > Pages > Source : "Deploy from a branch", branche main, dossier / (root). Enregistrer.
+4. Après 1-2 minutes, l'adresse est : https://mel848.github.io/mescomptes/
+5. Sur le PC de ton père, ouvrir cette adresse dans Microsoft Edge,
+   puis menu "..." > Applications > "Installer MesComptes".
+   L'appli a alors son icône sur le bureau et s'ouvre dans sa propre fenêtre.
+6. Au premier clic sur le micro, Edge demande l'autorisation : répondre "Autoriser".
+
+Important :
+- Les comptes restent uniquement sur ce PC (rien n'est envoyé sur GitHub).
+- Ne pas "effacer les données de navigation" d'Edge sans avoir fait une sauvegarde
+  (Paramètres de l'appli > Enregistrer une sauvegarde). Une sauvegarde par mois sur clé USB, c'est bien.
+- La dictée vocale passe par le service de reconnaissance d'Edge : il faut Internet pour parler,
+  mais la saisie au clavier marche aussi hors ligne.
+- Saisie par photo : la lecture des tickets se fait sur le PC (rien n'est envoyé ailleurs).
+  La toute première fois, l'appli télécharge son moteur de lecture (quelques Mo) : il faut Internet.
+  Pour la webcam, Edge demande l'autorisation au premier usage : répondre "Autoriser".
+- Import des échéances : onglet Échéances > "Importer depuis une capture d'écran".
+  Faire Windows + Maj + S sur la liste des prélèvements, puis Ctrl + V dans l'appli.
