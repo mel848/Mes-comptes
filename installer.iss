@@ -4,7 +4,7 @@
 
 [Setup]
 AppName=MesComptes
-AppVersion=1.3
+AppVersion=1.4
 AppPublisher=MesComptes
 DefaultDirName={autopf}\MesComptes
 DisableProgramGroupPage=yes

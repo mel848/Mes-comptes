@@ -168,6 +168,44 @@ tr.futhead td{background:var(--future);color:var(--future-ink);font-family:var(-
 .btn.fic svg{width:20px;height:20px}
 #dropzone{position:fixed;inset:0;z-index:70;background:rgb(109 85 227 / .18);display:grid;place-items:center;padding:16px}
 #dropzone div{background:var(--surface);color:var(--accent);font-family:var(--f-display);font-size:22px;font-weight:700;padding:28px 40px;border-radius:26px;border:3px dashed var(--accent)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:16px 18px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:4px;min-width:0}
+.stat .lbl{font-size:12.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:600}
+.stat .big{font-family:var(--f-display);font-size:32px;font-weight:700;line-height:1.1}
+.stat.alerte .big{color:var(--warn)}
+.stat .btn{align-self:flex-start;margin-top:6px}
+.chart svg{width:100%;height:auto;display:block}
+.chart .gl{stroke:var(--line);stroke-width:1}
+.chart .ax{fill:var(--muted);font-size:12px;font-family:var(--f-body)}
+.chart .area{fill:var(--accent);opacity:.12}
+.chart .ln{fill:none;stroke:var(--accent);stroke-width:3;stroke-linejoin:round;stroke-linecap:round}
+.chart .dot{fill:var(--accent);stroke:var(--surface);stroke-width:3}
+.chart .zero{stroke:var(--debit);stroke-dasharray:4 4;stroke-width:1.5}
+.duo{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.duo div{background:var(--sunk);border-radius:16px;padding:10px 14px;display:flex;flex-direction:column;gap:2px;min-width:0}
+.duo b{font-family:var(--f-display);font-size:20px}
+.bars{display:flex;flex-direction:column;gap:12px}
+.bar{display:grid;grid-template-columns:minmax(100px,190px) minmax(0,1fr) 52px 104px;gap:12px;align-items:center}
+.bar .nom{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600}
+.track{height:12px;background:var(--sunk);border-radius:99px;overflow:hidden}
+.track i{display:block;height:100%;background:var(--grad);border-radius:99px}
+.bar.autres .track i{background:var(--muted);opacity:.45}
+@media (max-width:600px){.bar{grid-template-columns:minmax(0,1fr) 46px 92px}.bar .track{grid-column:1/-1;grid-row:2}}
+.hausses{display:flex;flex-direction:column}
+.hausse{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:14px;align-items:center;padding:11px 0;border-bottom:1px solid var(--line)}
+.hausse:last-child{border-bottom:0}
+.hausse .up{color:var(--debit);font-weight:700;text-align:right}
+.mois-nav{display:inline-flex;align-items:center;gap:8px;font-weight:600;text-transform:capitalize}
+.mois-nav .btn{padding:6px 12px}
+.sec-head{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
+#verrou{position:fixed;inset:0;z-index:90;background:var(--bg);display:grid;place-items:center;padding:16px}
+#verrou .carte{background:var(--surface);border:1px solid var(--line);border-radius:26px;box-shadow:var(--shadow);padding:28px;width:min(400px,100%);display:flex;flex-direction:column;gap:14px}
+#verrou .logo{margin:0 auto}
+#verrou h2{text-align:center}
+.lien{background:none;border:0;color:var(--accent);font-weight:600;padding:4px;text-decoration:underline}
+.codesecours{font-family:ui-monospace,Consolas,monospace;font-size:28px;letter-spacing:.12em;text-align:center;background:var(--accent-soft);color:var(--accent);border-radius:16px;padding:14px;user-select:all}
+.imp-map{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px}
+.erreur{color:var(--debit);font-weight:600;font-size:14.5px}
 .row{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end}
 
 .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(20px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);padding:12px 16px;border-radius:999px;display:flex;gap:14px;align-items:center;z-index:60;max-width:calc(100% - 32px);box-shadow:0 6px 24px rgb(0 0 0 / .25)}
@@ -178,12 +216,13 @@ tr.futhead td{background:var(--future);color:var(--future-ink);font-family:var(-
 </head><body>
 <div class="wrap" id="app">
   <header class="top">
-    <div class="brand"><div class="logo" aria-hidden="true">€</div><h1>Mes<span>Comptes</span></h1></div>
+    <div class="brand"><div class="logo" aria-hidden="true">€</div><h1>Mes<span>Comptes</span></h1><button class="btn small" id="lockbtn" data-act="lock" hidden>Verrouiller</button></div>
     <div class="soldes" id="soldes"></div>
   </header>
   <div id="banner"></div>
   <nav class="tabs" id="tabs">
     <button data-v="ops">Opérations</button>
+    <button data-v="ana">Analyse</button>
     <button data-v="ech">Échéances mensuelles</button>
     <button data-v="tiers">Tiers &amp; catégories</button>
     <button data-v="params">Paramètres</button>
@@ -192,6 +231,7 @@ tr.futhead td{background:var(--future);color:var(--future-ink);font-family:var(-
 </div>
 <div id="modalroot"></div>
 <div id="toastroot"></div>
+<input type="file" id="g-imp" accept=".csv,.txt,.qif,.ofx,.qfx,.xls,.xlsx" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0" tabindex="-1" aria-hidden="true">
 <input type="file" id="g-photo" accept="image/*,.jpg,.jpeg,.png,.heic,.webp,.bmp" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0" tabindex="-1" aria-hidden="true">
 <input type="file" id="g-cap" accept="image/*,.jpg,.jpeg,.png,.webp,.bmp" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0" tabindex="-1" aria-hidden="true">
 <div id="dropzone" hidden><div>Lâche l'image ici</div></div>
@@ -425,6 +465,181 @@ function parseEcheancesTexte(text,st){
   }
   return out;
 }
+/* --- Import de fichiers --- */
+function parseNombre(v){
+  if(typeof v==='number')return isFinite(v)?round2(v):null;
+  let s=String(v??'').trim();if(!s)return null;let neg=false;
+  if(/^\(.*\)$/.test(s)){neg=true;s=s.slice(1,-1)}
+  s=s.replace(/eur(os?)?/gi,'').replace(/[\s  €$£]/g,'');
+  if(/[-−]$/.test(s)){neg=!neg;s=s.slice(0,-1)}
+  if(/^[-−]/.test(s)){neg=!neg;s=s.slice(1)}else if(/^\+/.test(s))s=s.slice(1);
+  const iv=s.lastIndexOf(','),ip=s.lastIndexOf('.');
+  if(iv>=0&&ip>=0){if(iv>ip)s=s.replace(/\./g,'').replace(',','.');else s=s.replace(/,/g,'')}
+  else if(iv>=0){if(s.split(',').length>2)s=s.replace(/,/g,'');else s=s.replace(',','.')}
+  else if(ip>=0&&/^\d{1,3}(\.\d{3})+$/.test(s))s=s.replace(/\./g,'');
+  if(!/^(\d+\.?\d*|\.\d+)$/.test(s))return null;
+  const n=parseFloat(s);return round2(neg?-n:n);
+}
+function decouperDate(v){
+  if(v instanceof Date&&!isNaN(v))return{a:v.getFullYear(),b:v.getMonth()+1,c:v.getDate(),ymd:true};
+  const s=String(v??'').replace(/\s+/g,'');let m;
+  if(m=s.match(/^(\d{4})[-\/.](\d{1,2})[-\/.](\d{1,2})/))return{a:+m[1],b:+m[2],c:+m[3],ymd:true};
+  if(m=s.match(/^(\d{4})(\d{2})(\d{2})/))return{a:+m[1],b:+m[2],c:+m[3],ymd:true};
+  if(m=s.match(/^(\d{1,2})[-\/.'](\d{1,2})[-\/.']+(\d{2,4})/))return{a:+m[1],b:+m[2],c:+m[3]};
+  return null;
+}
+function ordreDates(valeurs){
+  let dmy=0,mdy=0;
+  for(const v of valeurs){const p=decouperDate(v);if(!p||p.ymd)continue;if(p.a>12)dmy++;if(p.b>12)mdy++}
+  return mdy>dmy?'mdy':'dmy';
+}
+function versIso(v,ordre){
+  const p=decouperDate(v);if(!p)return null;let y,m,d;
+  if(p.ymd){y=p.a;m=p.b;d=p.c}else if(ordre==='mdy'){m=p.a;d=p.b;y=p.c}else{d=p.a;m=p.b;y=p.c}
+  if(y<100)y+=y<70?2000:1900;
+  if(m<1||m>12||d<1||d>dim(y,m-1))return null;
+  return `${y}-${pad(m)}-${pad(d)}`;
+}
+const decodeEnt=s=>String(s||'').replace(/&#(\d+);/g,(_,n)=>String.fromCharCode(+n)).replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&quot;/g,'"').replace(/&apos;/g,"'");
+const RE_OUVERTURE=/^(opening balance|solde (initial|d.ouverture|de d[ée]part|report[ée]?)|balance d.ouverture)$/i;
+function nettoyerCat(c){
+  c=String(c||'').trim();if(!c)return'';
+  if(/^\[.*\]$/.test(c))return'Virement interne';
+  return c.split('/')[0].split(':')[0].trim();
+}
+function parseQIF(text){
+  const recs=[];let cur={},type='',solde=null;
+  for(const raw of String(text).replace(/^﻿/,'').split(/\r?\n/)){
+    const l=raw.trimEnd();if(!l.trim())continue;
+    if(l[0]==='!'){type=l.trim().toLowerCase();cur={};continue}
+    if(l.trim()==='^'){
+      const ok=type.startsWith('!type:')&&!/cat|class|memorized|security|prices|invst/.test(type);
+      if(ok&&cur.D!=null){
+        const montant=parseNombre(cur.T??cur.U),tiers=(cur.P||'').trim(),cat=cur.L||(cur.split&&cur.split[0])||'';
+        if(montant!=null){
+          if(RE_OUVERTURE.test(tiers)||(!tiers&&/^\[.*\]$/.test(cat)&&!recs.length&&solde==null))solde={montant,dateBrute:cur.D};
+          else recs.push({dateBrute:cur.D,montant,tiers,cat:nettoyerCat(cat),note:(cur.M||'').trim(),pointe:/^[*xr]$/i.test((cur.C||'').trim())?true:false});
+        }
+      }
+      cur={};continue;
+    }
+    const k=l[0],v=l.slice(1).trim();
+    if(k==='S'){(cur.split=cur.split||[]).push(v);continue}
+    if(k==='E'||k==='$')continue;
+    if(cur[k]==null)cur[k]=v;
+  }
+  return{recs,solde,pointageFichier:recs.some(r=>r.pointe)};
+}
+function parseOFX(text){
+  const tag=(b,t)=>{const m=b.match(new RegExp('<'+t+'>([^<\\r\\n]*)','i'));return m?decodeEnt(m[1].trim()):''};
+  const recs=[];
+  for(const b0 of String(text).split(/<STMTTRN>/i).slice(1)){
+    const b=b0.split(/<\/STMTTRN>/i)[0],nom=tag(b,'NAME')||tag(b,'PAYEE'),memo=tag(b,'MEMO');
+    const montant=parseNombre(tag(b,'TRNAMT'));if(montant==null)continue;
+    recs.push({dateBrute:tag(b,'DTPOSTED').slice(0,8),montant,tiers:nom||memo,cat:'',note:nom&&memo&&memo!==nom?memo:'',pointe:true});
+  }
+  let solde=null;const lb=String(text).split(/<LEDGERBAL>/i)[1];
+  if(lb){const m=parseNombre(tag(lb,'BALAMT'));if(m!=null)solde={montant:m,dateBrute:tag(lb,'DTASOF').slice(0,8),actuel:true}}
+  return{recs,solde,pointageFichier:true};
+}
+function lireCSV(text){
+  text=String(text).replace(/^﻿/,'');
+  const lignes=text.split(/\r?\n/).filter(l=>l.trim()).slice(0,15);
+  let sep=';',best=-1;
+  for(const c of [';','\t','|',',']){
+    const n=lignes.map(l=>{let q=false,k=0;for(const ch of l){if(ch==='"')q=!q;else if(ch===c&&!q)k++}return k}).filter(x=>x>0).sort((a,b)=>a-b);
+    const med=n.length?n[Math.floor(n.length/2)]:0;const sc=med*(n.length/Math.max(1,lignes.length));
+    if(sc>best+0.01){best=sc;sep=c}
+  }
+  const rows=[];let row=[],cell='',q=false;
+  for(let i=0;i<text.length;i++){const ch=text[i];
+    if(q){if(ch==='"'){if(text[i+1]==='"'){cell+='"';i++}else q=false}else cell+=ch}
+    else if(ch==='"')q=true;
+    else if(ch===sep){row.push(cell);cell=''}
+    else if(ch==='\n'||ch==='\r'){if(ch==='\r'&&text[i+1]==='\n')i++;row.push(cell);if(row.some(c=>c.trim()))rows.push(row);row=[];cell=''}
+    else cell+=ch}
+  row.push(cell);if(row.some(c=>c.trim()))rows.push(row);
+  return rows.map(r=>r.map(c=>c.trim()));
+}
+const CHAMPS={
+  date:[/^date( d.?op[ée]ration| op[ée]ration)?$/,/^date/,/^jour$/],
+  tiers:[/^(tiers|b[ée]n[ée]ficiaire|payee|payeur|nom)$/,/^(libell[ée]|description|intitul[ée]|ordre)/,/libell|tiers|b[ée]n[ée]f/],
+  montant:[/^(montant|amount|somme)/,/montant/],
+  debit:[/^(d[ée]bit|d[ée]penses?|sorties?|retraits?)/],
+  credit:[/^(cr[ée]dit|recettes?|entr[ée]es?|d[ée]p[ôo]ts?)/],
+  cat:[/^(cat[ée]gorie|category|rubrique)/,/cat[ée]g/],
+  note:[/^(note|m[ée]mo|commentaire|remarque|d[ée]tail|informations?)/],
+  pointe:[/^(point[ée]e?|rapproch[ée]e?|statut|[ée]tat|cleared|r|c)$/]
+};
+function trouverEntete(rows){
+  let best=0,bi=0;
+  rows.slice(0,15).forEach((r,i)=>{const sc=r.reduce((n,c)=>{const cn=norm(c).trim();return n+(Object.values(CHAMPS).some(l=>l.some(re=>re.test(cn)))?1:0)},0);if(sc>best){best=sc;bi=i}});
+  return best>=2?bi:-1;
+}
+function devinerColonnes(entete){
+  const map={},pris=new Set();const H=entete.map(c=>norm(c).trim());
+  for(const k of ['date','debit','credit','montant','pointe','cat','note','tiers'])
+    for(const re of CHAMPS[k]){const i=H.findIndex((x,j)=>!pris.has(j)&&re.test(x));if(i>=0){map[k]=i;pris.add(i);break}}
+  if(map.montant!=null&&(map.debit!=null||map.credit!=null)){delete map.debit;delete map.credit}
+  return map;
+}
+const VRAI=/^(x|\*|r|c|oui|yes|true|vrai|1|point[ée]e?|rapproch[ée]e?|cleared|reconciled)$/i;
+function lignesVersRecs(rows,map){
+  const out=[];
+  for(const r of rows){
+    const g=k=>map[k]!=null?r[map[k]]:'';
+    let montant=null;
+    if(map.montant!=null)montant=parseNombre(g('montant'));
+    else{const d=parseNombre(g('debit')),c=parseNombre(g('credit'));if(d!=null||c!=null)montant=round2(Math.abs(c||0)-Math.abs(d||0))}
+    if(montant==null||!String(g('date')).trim())continue;
+    out.push({dateBrute:g('date'),montant,tiers:String(g('tiers')||'').trim(),cat:nettoyerCat(g('cat')),note:String(g('note')||'').trim(),pointe:map.pointe!=null?VRAI.test(String(g('pointe')).trim()):null});
+  }
+  return out;
+}
+function preparerImport(st,recs,ordre,today){
+  const base=st.exemple?[]:st.ops;
+  const dispo=new Map();for(const o of base){const k=Math.round(o.montant*100);if(!dispo.has(k))dispo.set(k,[]);dispo.get(k).push(o.date)}
+  const ops=[],doublons=[];let invalides=0;
+  for(const r of recs){
+    const date=versIso(r.dateBrute,ordre);if(!date||!r.montant){invalides++;continue}
+    const tiers=(r.tiers||'').replace(/\s+/g,' ').trim()||(r.note?r.note.slice(0,40):'Sans tiers');
+    const o={date,tiers,montant:r.montant,cat:r.cat||'',note:r.tiers?r.note:'',pointe:r.pointe};
+    const k=Math.round(r.montant*100),l=dispo.get(k);
+    const j=l?l.findIndex(d=>Math.abs((fromIso(d)-fromIso(date))/864e5)<=3):-1;
+    if(j>=0){l.splice(j,1);doublons.push(o)}else ops.push(o);
+  }
+  const dates=ops.map(o=>o.date).sort();
+  return{ops,doublons,invalides,debut:dates[0]||null,fin:dates[dates.length-1]||null};
+}
+
+/* --- Analyse --- */
+function moisPrec(cle){let[y,m]=cle.split('-').map(Number);m--;if(m<1){m=12;y--}return y+'-'+pad(m)}
+function moisSuiv(cle){let[y,m]=cle.split('-').map(Number);m++;if(m>12){m=1;y++}return y+'-'+pad(m)}
+function depensesParTiers(st,debut,fin){
+  const m=new Map();
+  for(const o of st.ops){if(o.montant>=0||o.date<debut||o.date>fin)continue;m.set(o.tiers,(m.get(o.tiers)||0)-o.montant)}
+  return[...m].map(([tiers,total])=>({tiers,total:round2(total)})).sort((a,b)=>b.total-a.total);
+}
+function hausses(st,cle,today){
+  const p=moisPrec(cle),fin=cle+'-31'>today?today:cle+'-31';
+  const avant=new Map(depensesParTiers(st,p+'-01',p+'-31').map(x=>[x.tiers,x.total]));
+  const out=[];
+  for(const x of depensesParTiers(st,cle+'-01',fin)){const a=avant.get(x.tiers)||0;
+    if(a>0&&x.total-a>=1&&x.total>a*1.03)out.push({tiers:x.tiers,avant:a,apres:x.total,diff:round2(x.total-a),pct:Math.round((x.total/a-1)*100)})}
+  return out.sort((a,b)=>b.diff-a.diff);
+}
+function serieSolde(st,today,nbMois=12){
+  const ops=st.ops.filter(o=>o.date<=today).sort((a,b)=>a.date.localeCompare(b.date));
+  let cle=today.slice(0,7);const cles=[];for(let i=0;i<nbMois;i++){cles.unshift(cle);cle=moisPrec(cle)}
+  const pts=[];let solde=st.soldeInitial.montant,i=0;
+  for(const c of cles){const fin=c===today.slice(0,7)?today:c+'-31';while(i<ops.length&&ops[i].date<=fin){solde+=ops[i].montant;i++}pts.push({cle:c,solde:round2(solde)})}
+  return pts;
+}
+function bilanMois(st,cle,today){
+  let e=0,d=0;const fin=cle+'-31'>today?today:cle+'-31';
+  for(const o of st.ops){if(o.date<cle+'-01'||o.date>fin)continue;if(o.montant>0)e+=o.montant;else d-=o.montant}
+  return{entrees:round2(e),sorties:round2(d)};
+}
 function soldes(st,today){
   let jour=st.soldeInitial.montant,banque=st.soldeInitial.montant,futur=0;
   for(const o of st.ops){if(o.date<=today)jour+=o.montant;else futur+=o.montant;if(o.pointee)banque+=o.montant}
@@ -487,7 +702,7 @@ const ICON_OK='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke
 const ICON_CAM='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"><path d="M4 7.5h3.2L9 5h6l1.8 2.5H20a1 1 0 011 1V18a1 1 0 01-1 1H4a1 1 0 01-1-1V8.5a1 1 0 011-1z"/><circle cx="12" cy="13" r="3.6"/></svg>';
 const ICON_MIC='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="9" y="3" width="6" height="12" rx="3" fill="currentColor"/><path d="M5.5 11a6.5 6.5 0 0013 0M12 17.5V21"/></svg>';
 
-let vue='ops',filtre='toutes',quickTxt='',quickNote='';
+let vue='ops',filtre='toutes',quickTxt='',quickNote='',toutHisto=false;
 
 function renderSoldes(){
   const T=todayIso(),s=soldes(S,T);
@@ -500,7 +715,8 @@ function renderSoldes(){
 function render(){
   renderSoldes();
   document.querySelectorAll('#tabs button').forEach(b=>b.setAttribute('aria-current',b.dataset.v===vue));
-  ({ops:vueOps,ech:vueEch,tiers:vueTiers,params:vueParams,rappro:vueRappro})[vue]();
+  $('#lockbtn').hidden=!S.utilisateur;
+  ({ops:vueOps,ana:vueAna,ech:vueEch,tiers:vueTiers,params:vueParams,rappro:vueRappro})[vue]();
 }
 
 /* --- Opérations --- */
@@ -525,7 +741,7 @@ function vueOps(){
         <button data-f="toutes" aria-pressed="${filtre==='toutes'}">Toutes les opérations<span class="count">${S.ops.length}</span></button>
         <button data-f="np" aria-pressed="${filtre==='np'}">Non pointées<span class="count">${S.ops.filter(o=>!o.pointee).length}</span></button>
       </div>
-      <div class="row"><button class="btn" data-act="newop">+ Saisie détaillée</button><button class="btn primary" data-act="rappro">Rapprochement</button></div>
+      <div class="row"><button class="btn" data-act="importfile">Importer un fichier</button><button class="btn" data-act="newop">+ Saisie détaillée</button><button class="btn primary" data-act="rappro">Rapprochement</button></div>
     </div>
     <div class="scroll" id="reg">${tableOps()}</div>
    </section>
@@ -537,12 +753,13 @@ function vueOps(){
 function tableOps(){
   const T=todayIso();
   const ops=[...S.ops].sort((a,b)=>a.date.localeCompare(b.date)||(a.cree||0)-(b.cree||0));
-  let solde=S.soldeInitial.montant,mois='',rows='',todayDone=false;
+  let solde=S.soldeInitial.montant,mois='',rows='',todayDone=false,masquees=0;const limite=addDays(T,-366);
   const ligneToday=()=>`<tr class="today"><td colspan="6">Aujourd'hui, ${dLong(T)}</td><td class="r num">Solde</td><td class="r num">${fmt(round2(solde))}</td><td></td></tr>`;
   for(const o of ops){
     if(!todayDone&&o.date>T){rows+=ligneToday();todayDone=true}
     solde+=o.montant;
     if(filtre==='np'&&o.pointee)continue;
+    if(!toutHisto&&o.date<limite){masquees++;continue}
     const mo=fromIso(o.date).toLocaleDateString('fr-FR',{month:'long',year:'numeric'});
     if(mo!==mois){mois=mo;rows+=`<tr class="month"><td colspan="9">${h(mo)}</td></tr>`}
     rows+=`<tr class="op" data-id="${o.id}">
@@ -556,6 +773,7 @@ function tableOps(){
       <td class="r"><button class="btn small" data-edit="${o.id}">Modifier</button></td></tr>`;
   }
   if(!todayDone)rows+=ligneToday();
+  if(masquees)rows=`<tr class="month"><td colspan="9"><button class="btn small" data-act="tout">Afficher l'historique complet (${masquees} opérations plus anciennes)</button></td></tr>`+rows;
   const av=aVenir(S,T);
   rows+=`<tr class="futhead"><td colspan="9">À venir dans les 20 prochains jours (échéances)</td></tr>`;
   if(!av.length)rows+=`<tr class="fut"><td colspan="9">Aucune échéance prévue d'ici 20 jours.</td></tr>`;
@@ -767,6 +985,7 @@ document.addEventListener('dragenter',e=>{if([...(e.dataTransfer||{}).types||[]]
 document.addEventListener('dragleave',()=>{dragN=Math.max(0,dragN-1);if(!dragN)$('#dropzone').hidden=true});
 document.addEventListener('dragover',e=>e.preventDefault());
 document.addEventListener('drop',e=>{e.preventDefault();dragN=0;$('#dropzone').hidden=true;const f=(e.dataTransfer.files||[])[0];if(!f)return;
+  if(/\.(csv|txt|qif|ofx|qfx|xlsx?)$/i.test(f.name)){ouvrirFichierImport(f);return}
   lireFichier(f,(vue==='ech'||$('#cap-zone'))?ouvrirCapture:ouvrirPhoto)});
 
 /* --- Import d'échéances depuis une capture d'écran --- */
@@ -975,16 +1194,29 @@ function modalTiers(t){
 
 /* --- Paramètres --- */
 function vueParams(){
+  const U=S.utilisateur;
   $('#view').innerHTML=`<div style="display:flex;flex-direction:column;gap:18px">
+  <section class="section"><h2>Compte utilisateur</h2>
+   ${U?`<div class="hint">Compte de <b>${h(U.nom)}</b>. Le mot de passe est demandé à chaque ouverture et après 15 minutes sans utilisation.</div>
+   <div class="row"><button class="btn" data-act="chgmdp">Changer le mot de passe</button><button class="btn danger" data-act="supmdp">Supprimer le mot de passe</button></div>`
+   :`<div class="hint">Protège l'appli par un mot de passe demandé à chaque ouverture.</div>
+   <div class="grid2"><label class="field"><span>Prénom ou nom</span><input id="u-nom" autocomplete="off"></label>
+   <label class="field"><span>Mot de passe (6 caractères mini)</span><input id="u-mdp" type="password" autocomplete="new-password"></label>
+   <label class="field"><span>Confirmer le mot de passe</span><input id="u-mdp2" type="password" autocomplete="new-password"></label></div>
+   <div class="row"><button class="btn primary" data-act="creercompte">Créer le compte</button></div>`}
+  </section>
+  <section class="section"><h2>Importer un historique</h2>
+   <div class="hint">Récupère les opérations d'un autre logiciel ou de la banque : fichiers <b>CSV</b>, <b>Excel</b> (.xls, .xlsx), <b>QIF</b> ou <b>OFX</b>. L'appli te montre tout avant d'importer, et ignore ce qui est déjà saisi.</div>
+   <div class="row"><button class="btn primary" data-act="importfile">Choisir le fichier à importer</button></div></section>
+  <section class="section"><h2>Exporter / changer d'appareil</h2>
+   <div class="hint">Pour passer sur un autre PC : enregistre une <b>sauvegarde complète</b>, installe MesComptes sur le nouveau PC, puis « Restaurer une sauvegarde ». Le fichier Excel sert à consulter les opérations dans un tableur.</div>
+   <div class="row"><button class="btn primary" data-act="export">Sauvegarde complète (.json)</button><button class="btn" data-act="exportcsv">Export Excel (.csv)</button>
+   <label class="btn" for="p-import" style="display:inline-block">Restaurer une sauvegarde</label><input type="file" id="p-import" accept=".json,application/json" hidden></div></section>
   <section class="section"><h2>Solde de départ</h2>
    <div class="hint">Le solde du compte avant la première opération saisie (celui du dernier relevé, par exemple).</div>
    <div class="row"><label class="field"><span>Montant (€)</span><input id="p-solde" inputmode="decimal" value="${String(S.soldeInitial.montant).replace('.',',')}"></label>
    <label class="field"><span>Au</span><input type="date" id="p-date" value="${S.soldeInitial.date}"></label>
    <button class="btn primary" data-act="savesolde">Enregistrer</button></div></section>
-  <section class="section"><h2>Sauvegarde</h2>
-   <div class="hint">Les comptes sont gardés sur ce PC. Une sauvegarde par mois sur une clé USB évite toute mauvaise surprise.</div>
-   <div class="row"><button class="btn" data-act="export">Enregistrer une sauvegarde</button>
-   <label class="btn" for="p-import" style="display:inline-block">Restaurer une sauvegarde</label><input type="file" id="p-import" accept=".json,application/json" hidden></div></section>
   <section class="section"><h2>${S.exemple?'Commencer pour de vrai':'Tout effacer'}</h2>
    <div class="hint">${S.exemple?'Efface les données d\'exemple. Les catégories sont gardées ; tiers, opérations et échéances repartent à zéro.':'Efface toutes les opérations, échéances et tiers de ce PC.'}</div>
    <div class="row">${S.exemple?`<label class="field"><span>Solde actuel du compte (€)</span><input id="p-start" inputmode="decimal" placeholder="Ex. : 1 523,40"></label>`:''}<button class="btn danger" id="p-reset">${S.exemple?'Effacer l\'exemple et commencer':'Tout effacer'}</button></div></section>
@@ -992,15 +1224,245 @@ function vueParams(){
   const r=$('#p-reset');
   r.onclick=()=>{if(!r.classList.contains('armed')){r.classList.add('armed');r.textContent='Confirmer';return}
     const start=S.exemple?parseMontant(($('#p-start')||{}).value||'0')||0:0;const neg=S.exemple&&/^\s*-/.test(($('#p-start')||{}).value||'');
-    S=vierge();S.soldeInitial.montant=neg?-start:start;save();vue='ops';render();toast('C\'est parti : saisis la première opération.')};
+    const u=S.utilisateur;S=vierge();if(u)S.utilisateur=u;S.soldeInitial.montant=neg?-start:start;save();vue='ops';render();toast('C\'est parti : saisis la première opération.')};
   $('#p-import').onchange=ev=>{const f=ev.target.files[0];if(!f)return;const rd=new FileReader();
     rd.onload=()=>{try{const d=JSON.parse(rd.result);if(!d.ops||!d.soldeInitial)throw 0;S=d;genEcheances(S,todayIso());save();render();toast('Sauvegarde restaurée')}catch(e){toast("Ce fichier n'est pas une sauvegarde MesComptes.")}};rd.readAsText(f)};
 }
-function exporter(){
-  const blob=new Blob([JSON.stringify(S,null,1)],{type:'application/json'});
-  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`MesComptes-sauvegarde-${todayIso()}.json`;
-  document.body.appendChild(a);a.click();a.remove();
-  toast("Sauvegarde lancée. (Dans l'aperçu en ligne, le téléchargement est bloqué ; il marche dans l'appli installée.)");
+function telecharger(nom,contenu,type){
+  const blob=new Blob([contenu],{type});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=nom;
+  document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),5000);
+  toast(`Fichier ${nom} enregistré dans Téléchargements. (Dans l'aperçu en ligne, le téléchargement est bloqué.)`);
+}
+function exporter(){telecharger(`MesComptes-sauvegarde-${todayIso()}.json`,JSON.stringify(S),'application/json')}
+function exporterCSV(){
+  const c=v=>{v=String(v??'');return /[;"\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v};
+  const n=v=>v?String(v.toFixed(2)).replace('.',','):'';
+  const L=['Date;Tiers;Catégorie;Mode;Débit;Crédit;Pointée;Note'];
+  for(const o of [...S.ops].sort((a,b)=>a.date.localeCompare(b.date))){const[y,m,d]=o.date.split('-');
+    L.push([`${d}/${m}/${y}`,c(o.tiers),c(o.cat),c(o.mode),n(o.montant<0?-o.montant:0),n(o.montant>0?o.montant:0),o.pointee?'Oui':'Non',c(o.note)].join(';'))}
+  telecharger(`MesComptes-operations-${todayIso()}.csv`,'﻿'+L.join('\r\n'),'text/csv;charset=utf-8');
+}
+
+/* --- Import d'un fichier (CSV, Excel, QIF, OFX) --- */
+const XLSX_URL='https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
+function chargerLib(src,glob){return new Promise((ok,ko)=>{if(window[glob])return ok();const sc=document.createElement('script');sc.src=src;sc.onload=ok;sc.onerror=ko;document.head.appendChild(sc)})}
+function decoderTexte(buf){try{return new TextDecoder('utf-8',{fatal:true}).decode(buf)}catch(e){return new TextDecoder('windows-1252').decode(buf)}}
+$('#g-imp').onchange=e=>{const f=e.target.files[0];if(f)ouvrirFichierImport(f)};
+async function ouvrirFichierImport(f){
+  const ext=(f.name.split('.').pop()||'').toLowerCase();let buf;
+  try{buf=await f.arrayBuffer()}catch(e){toast("Impossible d'ouvrir ce fichier.");return}
+  if(ext==='xls'||ext==='xlsx'){
+    try{await chargerLib(XLSX_URL,'XLSX')}catch(e){toast("Pour lire un fichier Excel, il faut Internet la première fois. Sinon, exporte en CSV.");return}
+    try{const wb=XLSX.read(buf,{type:'array',cellDates:true});const ws=wb.Sheets[wb.SheetNames[0]];
+      const rows=XLSX.utils.sheet_to_json(ws,{header:1,raw:true,defval:''}).map(r=>r.map(v=>v instanceof Date?`${pad(v.getDate())}/${pad(v.getMonth()+1)}/${v.getFullYear()}`:String(v??'').trim()));
+      modalColonnes(rows,f.name)}catch(e){toast("Ce fichier Excel n'a pas pu être lu.")}
+    return;
+  }
+  const texte=decoderTexte(buf);
+  if(ext==='qif'||/^\s*!(type|account|option)/i.test(texte)){const r=parseQIF(texte);return r.recs.length?modalImport(r,f.name):toast("Aucune opération trouvée dans ce fichier QIF.")}
+  if(ext==='ofx'||ext==='qfx'||/<OFX>/i.test(texte)){const r=parseOFX(texte);return r.recs.length?modalImport(r,f.name):toast("Aucune opération trouvée dans ce fichier OFX.")}
+  const rows=lireCSV(texte);if(rows.length<2){toast("Ce fichier ne contient pas de tableau d'opérations.");return}
+  modalColonnes(rows,f.name);
+}
+function modalColonnes(rows,nomFichier){
+  let hi=trouverEntete(rows);
+  const entete=hi>=0?rows[hi]:rows[0].map((_,i)=>'Colonne '+(i+1));
+  const data=rows.slice(hi>=0?hi+1:0);
+  const map=devinerColonnes(entete);
+  const opt=k=>`<option value="">— aucune —</option>`+entete.map((c,i)=>`<option value="${i}" ${map[k]===i?'selected':''}>${h(c||('Colonne '+(i+1)))}</option>`).join('');
+  const F=[['date','Date *'],['tiers','Tiers / libellé'],['montant','Montant (+/−)'],['debit','Ou : Débit'],['credit','Ou : Crédit'],['cat','Catégorie'],['note','Note'],['pointe','Pointée']];
+  openModal(`<h2>Importer « ${h(nomFichier)} »</h2>
+   <div class="hint">${data.length} lignes. Vérifie à quoi correspond chaque colonne (l'appli a deviné). Il faut la date et soit un montant, soit des colonnes Débit / Crédit.</div>
+   <div class="imp-map">${F.map(([k,l])=>`<label class="field"><span>${l}</span><select data-map="${k}">${opt(k)}</select></label>`).join('')}
+    <label class="field"><span>Format des dates</span><select id="m-ordre"><option value="dmy">jour/mois/année</option><option value="mdy">mois/jour/année</option></select></label></div>
+   <div id="m-apercu"></div>
+   <div class="actions"><div></div><div class="right"><button class="btn" data-close>Annuler</button><button class="btn primary" id="m-suite">Continuer</button></div></div>`);
+  const lireMap=()=>{const m={};document.querySelectorAll('[data-map]').forEach(sel=>{if(sel.value!=='')m[sel.dataset.map]=+sel.value});return m};
+  const recs=()=>lignesVersRecs(data,lireMap());
+  $('#m-ordre').value=ordreDates(data.map(r=>r[map.date]).filter(Boolean).slice(0,500));
+  const apercu=()=>{const m=lireMap(),R=recs(),o=$('#m-ordre').value;
+    let err='';if(m.date==null)err='Choisis la colonne de la date.';else if(m.montant==null&&m.debit==null&&m.credit==null)err='Choisis la colonne du montant, ou celles du débit et du crédit.';else if(!R.length)err='Aucune ligne lisible avec ces colonnes.';
+    $('#m-suite').disabled=!!err;
+    $('#m-apercu').innerHTML=err?`<div class="erreur">${err}</div>`:`<div class="hint">Aperçu des premières lignes :</div><div class="scroll" style="max-height:none"><table style="min-width:520px"><thead><tr><th>Date</th><th>Tiers</th><th>Catégorie</th><th class="r">Montant</th></tr></thead><tbody>${R.slice(0,5).map(r=>{const d=versIso(r.dateBrute,o);return`<tr><td class="num">${d?dCourt(d)+' '+d.slice(0,4):'<span class="erreur">'+h(r.dateBrute)+'</span>'}</td><td>${h(r.tiers)}</td><td>${h(r.cat)}</td><td class="r num ${r.montant<0?'debit':'credit'}">${fmt(r.montant)}</td></tr>`}).join('')}</tbody></table></div>`};
+  document.querySelectorAll('[data-map]').forEach(sel=>sel.onchange=apercu);$('#m-ordre').onchange=apercu;apercu();
+  $('#m-suite').onclick=()=>{const R=recs();modalImport({recs:R,solde:null,pointageFichier:R.some(r=>r.pointe)},nomFichier,$('#m-ordre').value)};
+}
+function modalImport(res,nomFichier,ordre){
+  const T=todayIso();ordre=ordre||ordreDates(res.recs.map(r=>r.dateBrute).slice(0,500));
+  const P=preparerImport(S,res.recs,ordre,T);
+  if(!P.ops.length&&!P.doublons.length){toast("Aucune opération valide trouvée.");return}
+  const tot=P.ops.reduce((a,o)=>a+o.montant,0);
+  const soldeF=res.solde&&res.solde.actuel?res.solde.montant:null;
+  openModal(`<h2>Importer « ${h(nomFichier)} »</h2>
+   <div class="duo"><div><span class="muted">Opérations</span><b>${P.ops.length}</b></div>
+    <div><span class="muted">Période</span><b style="font-size:16px">${P.debut?fromIso(P.debut).toLocaleDateString('fr-FR'):'—'} → ${P.fin?fromIso(P.fin).toLocaleDateString('fr-FR'):'—'}</b></div>
+    <div><span class="muted">Total</span><b class="${tot<0?'debit':'credit'}">${fmt(round2(tot))}</b></div></div>
+   ${P.doublons.length?`<label class="check"><input type="checkbox" id="i-dbl"> Importer aussi ${P.doublons.length} opération${P.doublons.length>1?'s':''} qui semble${P.doublons.length>1?'nt':''} déjà saisie${P.doublons.length>1?'s':''} (même montant à 3 jours près)</label>`:''}
+   ${P.invalides?`<div class="hint">${P.invalides} ligne${P.invalides>1?'s':''} sans date ou montant lisible ignorée${P.invalides>1?'s':''}.</div>`:''}
+   ${S.exemple?'<div class="lu">Les données d\'exemple seront effacées et remplacées par ce fichier.</div>':''}
+   <div class="field"><span>Pointage</span>
+    <label class="check"><input type="radio" name="i-pt" value="avant" checked> Pointer toutes les opérations jusqu'à aujourd'hui (historique déjà vérifié)</label>
+    ${res.pointageFichier?'<label class="check"><input type="radio" name="i-pt" value="fichier"> Garder le pointage du fichier</label>':''}
+    <label class="check"><input type="radio" name="i-pt" value="aucun"> Ne rien pointer</label></div>
+   <label class="field"><span>Solde actuel du compte à la banque (€, conseillé)</span><input id="i-solde" inputmode="decimal" placeholder="Ex. : 1 523,40" value="${soldeF!=null?String(soldeF).replace('.',','):''}"></label>
+   <div class="hint">L'appli s'en sert pour calculer le solde de départ, pour que le solde d'aujourd'hui soit juste. Laisse vide pour garder le solde actuel de l'appli.</div>
+   <div class="actions"><div></div><div class="right"><button class="btn" data-close>Annuler</button><button class="btn primary" id="i-ok">Importer</button></div></div>`);
+  const maj=()=>{const n=P.ops.length+(($('#i-dbl')||{}).checked?P.doublons.length:0);$('#i-ok').textContent=`Importer ${n} opération${n>1?'s':''}`};
+  maj();if($('#i-dbl'))$('#i-dbl').onchange=maj;
+  $('#i-ok').onclick=()=>{
+    const liste=P.ops.concat(($('#i-dbl')||{}).checked?P.doublons:[]);
+    const modePt=document.querySelector('[name="i-pt"]:checked').value;
+    const sv=$('#i-solde').value.trim(),soldeB=sv?parseFloat(sv.replace(/\s/g,'').replace('−','-').replace(',','.')):null;
+    if(sv&&isNaN(soldeB)){toast('Le solde actuel n\'est pas un nombre valide.');return}
+    const etaitVide=S.exemple||!S.ops.length;
+    if(S.exemple){const u=S.utilisateur;S=vierge();if(u)S.utilisateur=u}
+    // apprentissage tiers → catégorie la plus fréquente
+    const stat=new Map();
+    for(const o of liste){if(!stat.has(o.tiers))stat.set(o.tiers,{cats:{},deb:0,cre:0});const x=stat.get(o.tiers);if(o.cat)x.cats[o.cat]=(x.cats[o.cat]||0)+1;o.montant<0?x.deb++:x.cre++}
+    const catDe=t=>{const e=S.tiers.find(z=>norm(z.nom)===norm(t));if(e)return e.cat;const c=Object.entries(stat.get(t).cats).sort((a,b)=>b[1]-a[1])[0];return c?c[0]:'À classer'};
+    const catNom=c=>{if(!c)return null;const e=S.categories.find(z=>norm(z)===norm(c));if(e)return e;S.categories.splice(Math.max(0,S.categories.length-1),0,c);return c};
+    let k=0;const base=Date.now();
+    for(const o of liste){
+      const cat=catNom(o.cat)||catNom(catDe(o.tiers))||'À classer';
+      const pointee=modePt==='avant'?o.date<=T:modePt==='fichier'?!!o.pointe:false;
+      S.ops.push({id:uid(),date:o.date,tiers:o.tiers,cat,montant:o.montant,mode:o.montant>0?'Virement':'Carte',note:o.note||'',pointee,ech:null,cree:base+k++});
+    }
+    for(const[t,x]of stat)if(!S.tiers.some(z=>norm(z.nom)===norm(t))){const cat=catNom(catDe(t))||'À classer';S.tiers.push({id:uid(),nom:t,mots:[],cat,sens:x.cre>x.deb?'credit':'debit',mode:x.cre>x.deb?'Virement':'Carte'})}
+    const premier=S.ops.reduce((m,o)=>o.date<m?o.date:m,T);
+    if(soldeB!=null){const somme=S.ops.reduce((a,o)=>o.date<=T?a+o.montant:a,0);S.soldeInitial={montant:round2(soldeB-somme),date:premier}}
+    else if(etaitVide&&res.solde&&!res.solde.actuel){S.soldeInitial={montant:res.solde.montant,date:premier}}
+    else if(etaitVide&&res.solde&&res.solde.actuel){const somme=S.ops.reduce((a,o)=>o.date<=T?a+o.montant:a,0);S.soldeInitial={montant:round2(res.solde.montant-somme),date:premier}}
+    else S.soldeInitial.date=premier<S.soldeInitial.date?premier:S.soldeInitial.date;
+    save();closeModal();vue='ops';filtre='toutes';render();toast(`${liste.length} opération${liste.length>1?'s':''} importée${liste.length>1?'s':''}`);
+  };
+}
+
+/* --- Analyse --- */
+let anaMois=null,anaPer='mois';
+const nomMois=c=>fromIso(c+'-01').toLocaleDateString('fr-FR',{month:'long',year:'numeric'});
+function graphSolde(pts){
+  const W=720,H=230,L=64,R=18,Tp=16,B=34;const v=pts.map(p=>p.solde);
+  let mn=Math.min(...v,0<Math.min(...v)?Math.min(...v):0),mx=Math.max(...v);if(mx===mn){mx+=100;mn-=100}
+  const pas=Math.pow(10,Math.floor(Math.log10((mx-mn)/3||1)));const st=[1,2,2.5,5,10].map(x=>x*pas).find(x=>(mx-mn)/x<=4)||pas*10;
+  mn=Math.floor(mn/st)*st;mx=Math.ceil(mx/st)*st;
+  const X=i=>L+i*(W-L-R)/Math.max(1,pts.length-1),Y=x=>Tp+(mx-x)*(H-Tp-B)/(mx-mn);
+  let g='';for(let t=mn;t<=mx+1e-9;t+=st)g+=`<line class="gl" x1="${L}" x2="${W-R}" y1="${Y(t)}" y2="${Y(t)}"/><text class="ax" x="${L-8}" y="${Y(t)+4}" text-anchor="end">${Math.round(t).toLocaleString('fr-FR')} €</text>`;
+  if(mn<0&&mx>0)g+=`<line class="zero" x1="${L}" x2="${W-R}" y1="${Y(0)}" y2="${Y(0)}"/>`;
+  const d=pts.map((p,i)=>`${i?'L':'M'}${X(i).toFixed(1)},${Y(p.solde).toFixed(1)}`).join('');
+  const lab=pts.map((p,i)=>(i%2===pts.length%2||i===pts.length-1)?`<text class="ax" x="${X(i)}" y="${H-10}" text-anchor="middle">${fromIso(p.cle+'-01').toLocaleDateString('fr-FR',{month:'short'}).replace('.','')}</text>`:'').join('');
+  const n=pts.length-1;
+  return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Évolution du solde sur 12 mois">${g}<path class="area" d="${d}L${X(n)},${Y(Math.max(mn,0)<=mn?mn:0)}L${X(0)},${Y(Math.max(mn,0)<=mn?mn:0)}Z"/><path class="ln" d="${d}"/><circle class="dot" cx="${X(n)}" cy="${Y(pts[n].solde)}" r="6"/>${lab}</svg>`;
+}
+function vueAna(){
+  const T=todayIso(),cur=T.slice(0,7);if(!anaMois)anaMois=cur;
+  const np=S.ops.filter(o=>!o.pointee&&o.date<=T),npTot=round2(np.reduce((a,o)=>a+o.montant,0));
+  const av=aVenir(S,T),avD=round2(av.filter(x=>x.montant<0).reduce((a,x)=>a-x.montant,0)),avC=round2(av.filter(x=>x.montant>0).reduce((a,x)=>a+x.montant,0));
+  const so=soldes(S,T),pts=serieSolde(S,T,12);
+  const bm=bilanMois(S,cur,T),bp=bilanMois(S,moisPrec(cur),T);
+  const H_=hausses(S,anaMois,T);
+  const per={mois:[cur+'-01',T,'Ce mois-ci'],prec:[moisPrec(cur)+'-01',moisPrec(cur)+'-31','Le mois dernier'],an:[addDays(T,-365),T,'12 derniers mois'],tout:['0000-01-01',T,'Tout l\'historique']}[anaPer];
+  const dep=depensesParTiers(S,per[0],per[1]),totDep=dep.reduce((a,x)=>a+x.total,0);
+  const top=dep.slice(0,12),reste=dep.slice(12).reduce((a,x)=>a+x.total,0);
+  const lignes=top.map(x=>({...x,autres:false}));if(reste>0)lignes.push({tiers:`Autres (${dep.length-12} tiers)`,total:round2(reste),autres:true});
+  const maxV=Math.max(...lignes.map(x=>x.total),1);
+  const pctTxt=x=>{const p=x/totDep*100;return p<1?'< 1 %':Math.round(p)+' %'};
+  const evol=(a,b)=>b?`${a>=b?'+':'−'} ${fmt(Math.abs(a-b))} vs mois dernier`:'';
+  $('#view').innerHTML=`<div style="display:flex;flex-direction:column;gap:18px">
+   <div class="stats">
+    <div class="stat ${np.length?'alerte':''}"><span class="lbl">Non pointées</span><span class="big num">${np.length}</span><span class="muted" style="font-variant-numeric:tabular-nums">${np.length?fmt(npTot)+' à vérifier':'Tout est pointé'}</span>${np.length?'<button class="btn small" data-act="voirnp">Voir</button>':''}</div>
+    <div class="stat"><span class="lbl">À venir dans 20 jours</span><span class="big num">${av.length}</span><span class="muted" style="font-variant-numeric:tabular-nums">${av.length?`<span class="debit">− ${fmt(avD)}</span>${avC?` · <span class="credit">+ ${fmt(avC)}</span>`:''}`:'Aucune échéance'}</span></div>
+    <div class="stat"><span class="lbl">Solde aujourd'hui</span><span class="big num ${so.jour<0?'debit':''}">${fmt(so.jour)}</span><span class="muted" style="font-variant-numeric:tabular-nums">En banque (pointé) : ${fmt(so.banque)}</span></div>
+    <div class="stat"><span class="lbl">Prévu dans 20 jours</span><span class="big num ${so.prevu<0?'debit':''}">${fmt(so.prevu)}</span><span class="muted" style="font-variant-numeric:tabular-nums">${so.prevu>=so.jour?'+':'−'} ${fmt(Math.abs(so.prevu-so.jour))} par rapport à aujourd'hui</span></div>
+   </div>
+   <section class="section"><h2>Solde du compte</h2>
+    <div class="chart">${graphSolde(pts)}</div>
+    <div class="duo">
+     <div><span class="muted">Entrées ${nomMois(cur).split(' ')[0]}</span><b class="credit num">+ ${fmt(bm.entrees)}</b><span class="hint num">${evol(bm.entrees,bp.entrees)}</span></div>
+     <div><span class="muted">Sorties ${nomMois(cur).split(' ')[0]}</span><b class="debit num">− ${fmt(bm.sorties)}</b><span class="hint num">${evol(bm.sorties,bp.sorties)}</span></div>
+     <div><span class="muted">Le plus bas sur 12 mois</span><b class="num">${fmt(Math.min(...pts.map(p=>p.solde)))}</b></div>
+     <div><span class="muted">Le plus haut sur 12 mois</span><b class="num">${fmt(Math.max(...pts.map(p=>p.solde)))}</b></div>
+    </div></section>
+   <section class="section"><div class="sec-head"><h2>Hausses par rapport au mois précédent</h2>
+     <div class="mois-nav"><button class="btn small" data-act="anaprev" aria-label="Mois précédent">‹</button><span>${nomMois(anaMois)}</span><button class="btn small" data-act="anasuiv" aria-label="Mois suivant" ${anaMois>=cur?'disabled':''}>›</button></div></div>
+    ${anaMois===cur?'<div class="hint">Mois en cours : les montants comptent jusqu\'à aujourd\'hui.</div>':''}
+    ${H_.length?`<div class="hausses">${H_.map(x=>`<div class="hausse"><div><b>${h(x.tiers)}</b><div class="hint num">${nomMois(moisPrec(anaMois)).split(' ')[0]} : ${fmt(x.avant)} → ${nomMois(anaMois).split(' ')[0]} : ${fmt(x.apres)}</div></div><span class="up num">+ ${fmt(x.diff)}</span><span class="tag" style="background:var(--accent-soft);color:var(--debit)">+${x.pct} %</span></div>`).join('')}</div>`
+     :`<div class="empty">Aucune dépense en hausse en ${nomMois(anaMois)} par rapport à ${nomMois(moisPrec(anaMois))}.</div>`}
+   </section>
+   <section class="section"><div class="sec-head"><h2>Répartition des dépenses par tiers</h2>
+     <div class="seg" role="group" aria-label="Période">${[['mois','Ce mois'],['prec','Mois dernier'],['an','12 mois'],['tout','Tout']].map(([k,l])=>`<button data-per="${k}" aria-pressed="${anaPer===k}">${l}</button>`).join('')}</div></div>
+    <div class="hint">${per[2]} : <b class="num">${fmt(round2(totDep))}</b> de dépenses.</div>
+    ${lignes.length?`<div class="bars">${lignes.map(x=>`<div class="bar ${x.autres?'autres':''}"><span class="nom" title="${h(x.tiers)}">${h(x.tiers)}</span><span class="track"><i style="width:${Math.max(1.5,x.total/maxV*100).toFixed(1)}%"></i></span><span class="r num"><b>${pctTxt(x.total)}</b></span><span class="r num muted">${fmt(x.total)}</span></div>`).join('')}</div>`:'<div class="empty">Aucune dépense sur cette période.</div>'}
+   </section></div>`;
+}
+
+/* --- Compte utilisateur --- */
+let verrouille=false,derniereAct=Date.now();
+const b64=buf=>btoa(String.fromCharCode(...new Uint8Array(buf)));
+const unb64=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
+async function hacher(mdp,selB64){
+  if(!(window.crypto&&crypto.subtle))throw new Error('crypto');
+  const sel=selB64?unb64(selB64):crypto.getRandomValues(new Uint8Array(16));
+  const k=await crypto.subtle.importKey('raw',new TextEncoder().encode(mdp),'PBKDF2',false,['deriveBits']);
+  const bits=await crypto.subtle.deriveBits({name:'PBKDF2',salt:sel,iterations:150000,hash:'SHA-256'},k,256);
+  return{sel:b64(sel),hash:b64(bits)};
+}
+const normCode=c=>String(c||'').toUpperCase().replace(/[^A-Z0-9]/g,'');
+function nouveauCode(){const A='ABCDEFGHJKLMNPQRSTUVWXYZ23456789',r=crypto.getRandomValues(new Uint8Array(8));const c=[...r].map(x=>A[x%A.length]).join('');return c.slice(0,4)+'-'+c.slice(4)}
+async function definirCompte(nom,mdp){
+  const p=await hacher(mdp),code=nouveauCode(),c=await hacher(normCode(code));
+  S.utilisateur={nom,sel:p.sel,hash:p.hash,selCode:c.sel,hashCode:c.hash};save();return code;
+}
+function montrerCode(code,titre){
+  openModal(`<h2>${titre}</h2>
+   <div class="hint">Voici le <b>code de secours</b>. Il sert à choisir un nouveau mot de passe en cas d'oubli. Note-le sur papier et range-le avec les papiers de la banque : il ne sera plus affiché.</div>
+   <div class="codesecours">${code}</div>
+   <div class="actions"><div></div><div class="right"><button class="btn primary" data-close>C'est noté</button></div></div>`);
+}
+function afficherVerrou(mode){
+  closeModal();$('#app').hidden=true;let v=$('#verrou');if(!v){v=document.createElement('div');v.id='verrou';document.body.appendChild(v)}
+  const U=S.utilisateur;
+  v.innerHTML=mode==='oubli'?`<div class="carte"><div class="logo" aria-hidden="true">€</div><h2>Nouveau mot de passe</h2>
+    <label class="field"><span>Code de secours</span><input id="v-code" autocomplete="off" placeholder="XXXX-XXXX"></label>
+    <label class="field"><span>Nouveau mot de passe</span><input id="v-n1" type="password" autocomplete="new-password"></label>
+    <label class="field"><span>Confirmer</span><input id="v-n2" type="password" autocomplete="new-password"></label>
+    <div class="erreur" id="v-err"></div><button class="btn primary" id="v-ok">Valider</button><button class="lien" id="v-retour">Retour</button></div>`
+  :`<div class="carte"><div class="logo" aria-hidden="true">€</div><h2>Bonjour ${h(U.nom)}</h2>
+    <label class="field"><span>Mot de passe</span><input id="v-mdp" type="password" autocomplete="current-password"></label>
+    <div class="erreur" id="v-err"></div><button class="btn primary" id="v-ok">Ouvrir mes comptes</button><button class="lien" id="v-oubli">Mot de passe oublié ?</button></div>`;
+  const err=t=>$('#v-err').textContent=t;
+  if(mode==='oubli'){
+    $('#v-retour').onclick=()=>afficherVerrou();
+    $('#v-ok').onclick=async()=>{const n1=$('#v-n1').value,n2=$('#v-n2').value;
+      if(n1.length<6)return err('Le mot de passe doit faire au moins 6 caractères.');if(n1!==n2)return err('Les deux mots de passe sont différents.');
+      const c=await hacher(normCode($('#v-code').value),U.selCode);if(c.hash!==U.hashCode)return err('Code de secours incorrect.');
+      const code=await definirCompte(U.nom,n1);ouvrir();montrerCode(code,'Mot de passe changé')};
+    $('#v-code').focus();
+  }else{
+    const go=async()=>{try{const p=await hacher($('#v-mdp').value,U.sel);if(p.hash===U.hash)ouvrir();else{err('Mot de passe incorrect.');$('#v-mdp').select()}}catch(e){err("Le déverrouillage n'est pas possible dans ce navigateur.")}};
+    $('#v-ok').onclick=go;$('#v-mdp').onkeydown=e=>{if(e.key==='Enter')go()};$('#v-oubli').onclick=()=>afficherVerrou('oubli');
+    $('#v-mdp').focus();
+  }
+}
+function ouvrir(){verrouille=false;derniereAct=Date.now();const v=$('#verrou');if(v)v.remove();$('#app').hidden=false;render()}
+function verrouiller(){if(!S.utilisateur)return;verrouille=true;afficherVerrou()}
+function demarrer(){if(S.utilisateur){verrouille=true;afficherVerrou()}else render()}
+['mousemove','keydown','click','touchstart'].forEach(ev=>document.addEventListener(ev,()=>derniereAct=Date.now(),{passive:true}));
+setInterval(()=>{if(S.utilisateur&&!verrouille&&Date.now()-derniereAct>15*60*1000)verrouiller()},30000);
+async function creerCompte(){
+  const nom=$('#u-nom').value.trim(),m1=$('#u-mdp').value,m2=$('#u-mdp2').value;
+  if(!nom)return toast('Indique un prénom ou un nom.');if(m1.length<6)return toast('Le mot de passe doit faire au moins 6 caractères.');if(m1!==m2)return toast('Les deux mots de passe sont différents.');
+  try{const code=await definirCompte(nom,m1);render();montrerCode(code,'Compte créé')}catch(e){toast("Impossible de créer le compte dans ce navigateur.")}
+}
+function modalMdp(supprimer){
+  openModal(`<h2>${supprimer?'Supprimer le mot de passe':'Changer le mot de passe'}</h2>
+   <label class="field"><span>Mot de passe actuel</span><input id="c-old" type="password" autocomplete="current-password"></label>
+   ${supprimer?'<div class="hint">L\'appli s\'ouvrira ensuite sans mot de passe.</div>':`<label class="field"><span>Nouveau mot de passe</span><input id="c-n1" type="password" autocomplete="new-password"></label><label class="field"><span>Confirmer</span><input id="c-n2" type="password" autocomplete="new-password"></label>`}
+   <div class="actions"><div></div><div class="right"><button class="btn" data-close>Annuler</button><button class="btn ${supprimer?'danger':'primary'}" id="c-ok">${supprimer?'Supprimer':'Changer'}</button></div></div>`);
+  $('#c-ok').onclick=async()=>{const U=S.utilisateur,p=await hacher($('#c-old').value,U.sel);if(p.hash!==U.hash)return toast('Mot de passe actuel incorrect.');
+    if(supprimer){delete S.utilisateur;save();closeModal();render();return toast('Mot de passe supprimé')}
+    const n1=$('#c-n1').value;if(n1.length<6)return toast('Le mot de passe doit faire au moins 6 caractères.');if(n1!==$('#c-n2').value)return toast('Les deux mots de passe sont différents.');
+    const code=await definirCompte(U.nom,n1);closeModal();render();montrerCode(code,'Mot de passe changé')};
 }
 
 /* --- Modale & toast --- */
@@ -1019,6 +1481,7 @@ document.addEventListener('click',e=>{
   if(e.target.id==='ov'){closeModal();return}
   if(t.matches('[data-close]')){closeModal();return}
   if(t.matches('#tabs button')){vue=t.dataset.v;render();return}
+  if(t.matches('[data-per]')){anaPer=t.dataset.per;vueAna();return}
   if(t.matches('[data-f]')){filtre=t.dataset.f;vueOps();return}
   if(t.matches('[data-sug]')){actionSug(rapSug[+t.dataset.sug]);return}
   if(t.matches('tr[data-rc]')){const id=t.dataset.rc;rap.coches.has(id)?rap.coches.delete(id):rap.coches.add(id);const sc=document.querySelector('.rap .scroll').scrollTop;render();document.querySelector('.rap .scroll').scrollTop=sc;return}
@@ -1034,6 +1497,16 @@ document.addEventListener('click',e=>{
   if(act==='quickedit'){const r=parseSaisie(quickTxt,S,todayIso());modalOp(null,{date:r.date,tiers:r.tiers||'',cat:r.cat,abs:r.montant??'',sens:r.sens,mode:r.mode,note:quickNote.trim()||r.note})}
   if(act==='newop')modalOp(null);
   if(act==='rappro')modalRappro();
+  if(act==='importfile'){const i=$('#g-imp');i.value='';try{i.showPicker?i.showPicker():i.click()}catch(e){i.click()}}
+  if(act==='tout'){toutHisto=true;vueOps()}
+  if(act==='exportcsv')exporterCSV();
+  if(act==='lock')verrouiller();
+  if(act==='creercompte')creerCompte();
+  if(act==='chgmdp')modalMdp(false);
+  if(act==='supmdp')modalMdp(true);
+  if(act==='voirnp'){vue='ops';filtre='np';render()}
+  if(act==='anaprev'){anaMois=moisPrec(anaMois);vueAna()}
+  if(act==='anasuiv'){anaMois=moisSuiv(anaMois);vueAna()}
   if(act==='rapsolde'){const cur=rap;modalRappro();$('#r-solde').value=String(cur.solde).replace('.',',');const ok=$('#r-ok');ok.onclick=()=>{const v=parseSigne($('#r-solde').value);if(v==null)return;cur.solde=v;rap=cur;closeModal();render()}}
   if(act==='rapall'){S.ops.forEach(o=>{if(!o.pointee&&o.date<=todayIso())rap.coches.add(o.id)});render()}
   if(act==='rapnone'){rap.coches.clear();render()}
@@ -1059,8 +1532,8 @@ document.addEventListener('keydown',e=>{
   if(e.key==='Enter'&&e.target.id==='newcat'){e.preventDefault();document.querySelector('[data-act="addcat"]').click()}
 });
 // Vérifie les échéances si l'appli reste ouverte d'un jour à l'autre
-setInterval(()=>{if(genEcheances(S,todayIso())){save();if(!$('#ov'))render()}},60000);
-render();
-if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
+setInterval(()=>{if(genEcheances(S,todayIso())){save();if(!$('#ov')&&!verrouille)render()}},60000);
+demarrer();
+if('serviceWorker' in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('sw.js').catch(()=>{});
 </script>
 </body></html>
