@@ -1,12 +1,10 @@
 ; Installateur Windows de MesComptes
-; Il installe l'icône et un raccourci qui ouvre l'appli dans sa propre fenêtre Edge
-; (Edge est nécessaire pour la dictée vocale et la lecture des photos).
-; L'emplacement d'Edge est cherché automatiquement (il varie selon les PC).
-#define AppUrl "https://mel848.github.io/Mes-comptes/"
+; L'appli est copiée sur le PC et s'ouvre dans sa propre fenêtre Edge
+; (Edge est nécessaire pour la dictée vocale). Pas besoin de GitHub Pages.
 
 [Setup]
 AppName=MesComptes
-AppVersion=1.1
+AppVersion=1.2
 AppPublisher=MesComptes
 DefaultDirName={autopf}\MesComptes
 DisableProgramGroupPage=yes
@@ -22,7 +20,11 @@ WizardStyle=modern
 Name: "fr"; MessagesFile: "compiler:Languages\French.isl"
 
 [Files]
-Source: "icon.ico"; DestDir: "{app}"
+Source: "index.html"; DestDir: "{app}"; Flags: ignoreversion
+Source: "manifest.json"; DestDir: "{app}"; Flags: ignoreversion
+Source: "icon-192.png"; DestDir: "{app}"; Flags: ignoreversion
+Source: "icon-512.png"; DestDir: "{app}"; Flags: ignoreversion
+Source: "icon.ico"; DestDir: "{app}"; Flags: ignoreversion
 
 [Icons]
 Name: "{autodesktop}\MesComptes"; Filename: "{code:LanceurExe}"; Parameters: "{code:LanceurParams}"; IconFilename: "{app}\icon.ico"; Comment: "Mes comptes bancaires"
@@ -67,7 +69,17 @@ begin
   if Essaye(ExpandConstant('{localappdata}\Microsoft\Edge\Application\msedge.exe')) then Exit;
 end;
 
-{ Si Edge est introuvable, on ouvre l'appli dans le navigateur par défaut }
+{ Adresse locale de l'appli : file:///C:/Users/.../MesComptes/index.html }
+function AdresseAppli(): String;
+var
+  S: String;
+begin
+  S := ExpandConstant('{app}\index.html');
+  StringChangeEx(S, '\', '/', True);
+  StringChangeEx(S, ' ', '%20', True);
+  Result := 'file:///' + S;
+end;
+
 function LanceurExe(Param: String): String;
 begin
   TrouverEdge();
@@ -81,7 +93,7 @@ function LanceurParams(Param: String): String;
 begin
   TrouverEdge();
   if EdgeExe <> '' then
-    Result := '--app={#AppUrl}'
+    Result := '--app="' + AdresseAppli() + '"'
   else
-    Result := '{#AppUrl}';
+    Result := '"' + ExpandConstant('{app}\index.html') + '"';
 end;
